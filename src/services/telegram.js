@@ -5,14 +5,14 @@ function buildGoogleFlightsLink({ origin, destination, departDate, returnDate })
   return `https://www.google.com/travel/flights?q=Flights%20from%20${origin}%20to%20${destination}%20on%20${departDate}%20through%20${returnDate}`;
 }
 
-function formatMessage({ airlineName, origin, destination, departDate, returnDate, durationDays, oldPriceDzd, newPriceDzd }) {
+function formatMessage({ airlineName, origin, destination, departDate, returnDate, durationDays, oldPriceDzd, newPriceDzd, bookingLink }) {
   const saved = oldPriceDzd - newPriceDzd;
-  const link = buildGoogleFlightsLink({ origin, destination, departDate, returnDate });
+  const link = bookingLink || buildGoogleFlightsLink({ origin, destination, departDate, returnDate });
 
   return [
     `✈️ *تنبيه انخفاض سعر*`,
     ``,
-    `*شركة الطيران:* ${airlineName}`,
+    `*شركة الطيران:* ✈️ ${airlineName}`,
     `*المسار:* ${origin} → ${destination}`,
     `*الذهاب:* ${departDate}`,
     `*العودة:* ${returnDate}`,
@@ -22,7 +22,7 @@ function formatMessage({ airlineName, origin, destination, departDate, returnDat
     `*السعر الجديد:* ${newPriceDzd.toLocaleString()} DZD`,
     `*التوفير:* ${saved.toLocaleString()} DZD`,
     ``,
-    `[فتح الرحلة في Google Flights](${link})`,
+    `[فتح الرحلة](${link})`,
     ``,
     `_تم الإنشاء تلقائيًا_`,
     ``,
