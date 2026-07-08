@@ -10,6 +10,17 @@ function calculateReturnDate(departDate, durationDays) {
   return d.toISOString().slice(0, 10);
 }
 
+function formatDDMM(dateStr) {
+  const [, month, day] = dateStr.split('-');
+  return `${day}${month}`;
+}
+
+function buildBookingLink({ origin, destination, departDate, returnDate }) {
+  const departPart = formatDDMM(departDate);
+  const returnPart = formatDDMM(returnDate);
+  return `https://www.aviasales.com/search/${origin}${departPart}${destination}${returnPart}1`;
+}
+
 async function fetchCheapestByAirline({ departDate, durationDays }) {
   const returnDate = calculateReturnDate(departDate, durationDays);
 
@@ -36,23 +47,30 @@ async function fetchCheapestByAirline({ departDate, durationDays }) {
   const cheapestByAirline = {};
   for (const ticket of candidates) {
     const code = ticket.airline;
-    if (!config.allowedAirlines[code]) continue;
     if (!cheapestByAirline[code] || ticket.price < cheapestByAirline[code].price) {
       cheapestByAirline[code] = ticket;
     }
   }
+
+  const bookingLink = buildBookingLink({
+    origin: config.route.origin,
+    destination: config.route.destination,
+    departDate,
+    returnDate,
+  });
 
   const results = [];
   for (const [code, ticket] of Object.entries(cheapestByAirline)) {
     const priceDzd = await convertUsdToDzd(ticket.price);
     results.push({
       airlineCode: code,
-      airlineName: config.allowedAirlines[code],
+      airlineName: config.allowedAirlines[code] || code,
       priceUsd: ticket.price,
       priceDzd,
       departureAt: ticket.departure_at,
       returnAt: ticket.return_at,
       flightNumber: ticket.flight_number,
+      bookingLink,
     });
   }
 
@@ -66,4 +84,4 @@ async function fetchCheapestByAirline({ departDate, durationDays }) {
   };
 }
 
-module.exports = { fetchCheapestByAirline, calculateReturnDate };
+module.exports = { fetchCheapestByAirline, calculateReturnDate, buildBookingLink };
