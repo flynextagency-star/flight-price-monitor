@@ -25,6 +25,9 @@ function formatMessage({ airlineName, origin, destination, departDate, returnDat
     `[فتح الرحلة في Google Flights](${link})`,
     ``,
     `_تم الإنشاء تلقائيًا_`,
+    ``,
+    `👥 *فريق Flynext.agency*`,
+    `Walid Choukry | Yacob | Gaya`,
   ].join('\n');
 }
 
