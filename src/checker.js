@@ -36,30 +36,20 @@ async function checkTrip({ departDate, durationDays, targetPriceDzd }) {
       previousPriceDzd: previous ? previous.priceDzd : null,
     };
 
-    let alertReason = null;
-
-    if (previous && ticket.priceDzd < previous.priceDzd) {
-      alertReason = 'price_drop';
-    } else if (targetPriceDzd && ticket.priceDzd < Number(targetPriceDzd)) {
-      alertReason = 'target_reached';
-    }
-
-    if (alertReason) {
-      await sendPriceAlert({
-        airlineName: ticket.airlineName,
-        origin: config.route.origin,
-        destination: config.route.destination,
-        departDate,
-        returnDate,
-        durationDays,
-        oldPriceDzd: previous ? previous.priceDzd : ticket.priceDzd,
-        newPriceDzd: ticket.priceDzd,
-      });
-      console.log(`🔔 تم إرسال إشعار (${alertReason}) لشركة ${ticket.airlineName}: ${ticket.priceDzd} DZD`);
-    }
+    await sendPriceAlert({
+      airlineName: ticket.airlineName,
+      origin: config.route.origin,
+      destination: config.route.destination,
+      departDate,
+      returnDate,
+      durationDays,
+      oldPriceDzd: previous ? previous.priceDzd : ticket.priceDzd,
+      newPriceDzd: ticket.priceDzd,
+    });
+    console.log(`🔔 تم إرسال تحديث السعر لشركة ${ticket.airlineName}: ${ticket.priceDzd} DZD`);
 
     saveTripRecord(tripKey, record);
-    summary.push({ ...record, alertSent: !!alertReason });
+    summary.push({ ...record, alertSent: true });
   }
 
   return summary;
