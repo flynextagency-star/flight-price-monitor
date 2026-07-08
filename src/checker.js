@@ -45,6 +45,7 @@ async function checkTrip({ departDate, durationDays, targetPriceDzd }) {
       durationDays,
       oldPriceDzd: previous ? previous.priceDzd : ticket.priceDzd,
       newPriceDzd: ticket.priceDzd,
+      bookingLink: ticket.bookingLink,
     });
     console.log(`🔔 تم إرسال تحديث السعر لشركة ${ticket.airlineName}: ${ticket.priceDzd} DZD`);
 
