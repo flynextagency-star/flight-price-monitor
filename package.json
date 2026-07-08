@@ -1,0 +1,19 @@
+{
+  "name": "flight-price-monitor",
+  "version": "0.1.0",
+  "description": "نواة خلفية لمراقبة أسعار رحلات ALG -> CAN وإرسال إشعارات Telegram عند انخفاض السعر",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3"
+  }
+}
