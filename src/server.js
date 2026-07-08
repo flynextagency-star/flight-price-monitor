@@ -4,6 +4,7 @@ const config = require('./config');
 const { checkTrip } = require('./checker');
 const { startScheduler } = require('./scheduler');
 const watchlist = require('./watchlist');
+const { sendPriceAlert } = require('./services/telegram');
 
 const app = express();
 app.use(express.json());
@@ -57,7 +58,7 @@ app.post('/api/trips/:id/pause', (req, res) => {
 
 app.post('/api/trips/:id/resume', (req, res) => {
   try {
-    res.json(watchlist.setStatus(req.params.id, 'running'));
+    res.json(watchlist.setStatus(req.params.id, 'active'));
   } catch (err) {
     res.status(404).json({ error: err.message });
   }
@@ -72,13 +73,31 @@ app.post('/api/trips/:id/duplicate', (req, res) => {
 });
 
 app.post('/api/trips/:id/check-now', async (req, res) => {
-  const trip = watchlist.getAllWatchedTrips().find((t) => t.id === req.params.id);
+  const trip = watchlist.getAllWatchedTrips().find(t => t.id === req.params.id);
   if (!trip) return res.status(404).json({ error: 'الرحلة غير موجودة' });
   try {
     const result = await checkTrip(trip);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/test-telegram', async (req, res) => {
+  try {
+    await sendPriceAlert({
+      airlineName: 'Test Airline',
+      origin: config.route.origin,
+      destination: config.route.destination,
+      departDate: '2026-08-01',
+      returnDate: '2026-08-10',
+      durationDays: 9,
+      oldPriceDzd: 50000,
+      newPriceDzd: 45000,
+    });
+    res.json({ success: true, message: 'تم إرسال رسالة تجريبية إلى Telegram' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
